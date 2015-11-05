@@ -19,6 +19,6 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #=============================================================================
 
-srcdir=$(dirname "$(readlink -f $0)")
+srcdir=$(readlink -f "$(dirname "$(readlink -f $0)")/..")
 
-cmake -DCMAKE_TOOLCHAIN_FILE="$srcdir/sdcc_toolchain.cmake" "$srcdir"
+cmake -DSDCC_PREFIX="sdcc-" -DCMAKE_TOOLCHAIN_FILE="$srcdir/sdcc_toolchain.cmake" "$srcdir"

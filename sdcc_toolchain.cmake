@@ -23,7 +23,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/Modules)
 set(CMAKE_SYSTEM_NAME sdcc)
 set(CMAKE_SYSTEM_PROCESSOR mcs51)
 
-set(SDCC_PREFIX "sdcc-")
+set(SDCC_PREFIX "" CACHE STRING "The prefix of the sdcc compiler toolchain")
 
 if(DEFINED SDCC_LOCATION)
   find_program(CMAKE_C_COMPILER
