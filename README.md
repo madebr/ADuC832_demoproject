@@ -40,6 +40,7 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
 * ADC:
     + Continuous/DMA mode sampling
     + Temperature sensor
+    + DAC
 * CPU:
     + Powerdown
     + External Interrupts
@@ -86,5 +87,5 @@ mkdir builddir && cd builddir
 cmake -DCMAKE_TOOLCHAIN_FILE="$srcdir/sdcc_toolchain.cmake" "$srcdir"
 make -j3
 ```
-Fedora should insert `-DSDCC_PREFIX="sdcc-"` in the cmake command (see `tools/cmake_fedora.sh`).
+Fedora users should insert `-DSDCC_PREFIX="sdcc-"` in the cmake command (see `tools/cmake_fedora.sh`).
 
