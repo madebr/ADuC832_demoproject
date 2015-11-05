@@ -1,0 +1,6 @@
+
+set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE)
+
+set(CMAKE_SYSTEM_INCLUDE_PATH /usr/share/sdcc/include)
+set(CMAKE_SYSTEM_LIBRARY_PATH /usr/share/sdcc/lib)
+set(CMAKE_SYSTEM_PROGRAM_PATH /usr/bin)

@@ -1,0 +1,43 @@
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR})
+
+# the name of the target operating system
+set(CMAKE_SYSTEM_NAME mcs51)
+
+set(SDCC_PREFIX "sdcc-")
+
+if(DEFINED SDCC_LOCATION)
+  find_program(CMAKE_C_COMPILER
+    NAMES "${SDCC_PREFIX}sdcc" "sdcc"
+    PATHS "${SDCC_LOCATION}"
+  )
+else()
+  find_program(CMAKE_C_COMPILER
+    NAMES "${SDCC_PREFIX}sdcc" "sdcc"
+  )
+  get_filename_component(SDCC_LOCATION "${CMAKE_C_COMPILER}" PATH)
+endif()
+
+macro(FIND_SDCC_PROGRAM TARGET WHAT)
+  find_program(${TARGET}
+    NAMES "${SDCC_PREFIX}${WHAT}" "${WHAT}"
+    PATHS "${SDCC_LOCATION}"
+    NODEFAULTPATH
+  )
+  find_program(${TARGET}
+    NAMES "${SDCC_PREFIX}${WHAT}" "${WHAT}"
+  )
+endmacro(FIND_SDCC_PROGRAM)
+
+FIND_SDCC_PROGRAM(SDCCLIB_EXECUTABLE "sdcclib")
+FIND_SDCC_PROGRAM(CMAKE_LINKER "sdld")
+FIND_SDCC_PROGRAM(CMAKE_AR "sdar")
+FIND_SDCC_PROGRAM(CMAKE_NM "sdnm")
+FIND_SDCC_PROGRAM(CMAKE_MAKEBIN "makebin")
+
+set(SDCC_MODEL small)
+
+set(CMAKE_FIND_ROOT_PATH  /usr/share/sdcc)
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
