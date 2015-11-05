@@ -3,10 +3,16 @@
 
 #include <stdint.h>
 
+#include "ADUC832.h"
+
 #define pwm_init pwm_disable
 
 void pwm_enable(void);
-void pwm_disable(void);
+
+static inline void pwm_disable(void)
+{
+    PWMCON = 0x0;
+}
 
 #endif
 

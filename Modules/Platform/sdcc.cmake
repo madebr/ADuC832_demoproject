@@ -1,4 +1,3 @@
-
 set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE)
 
 set(CMAKE_SYSTEM_INCLUDE_PATH /usr/share/sdcc/include)

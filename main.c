@@ -1,14 +1,14 @@
 #include <stdint.h>
 
 #include "adc.h"
-#include "dac.h"
 #include "clock.h"
 #include "interrupts.h"
 #include "lcd.h"
-#include "led.h"
 #include "pwm.h"
+#include "rtc.h"
 #include "serial.h"
 #include "watchdog.h"
+#include "time.h"
 
 #include "ADUC832.h"
 
@@ -18,32 +18,39 @@
 // __pdata: eXternal Data
 // __xdata/__far puts variable in eXternal RAM (large memory model)
 
-#include <string.h>
-
 int main()
 {
-  uint8_t led_raw = 0xff;
+  const char __code str1[] = "Input some data:";
+  const char __code str2[] = " GOT SOMETHING\r\n";
   clock_init();
   adc_init();
-  dac_init();
-  serial_init();
   lcd_init();
-  led_init();
   pwm_init();
+  rtc_init();
+  serial_init();
   watchdog_init();
+  P2 = 0xff;
   interrupts_enable();
+  adc_calibrate();
+  serial_puts_blocking(str1);
   while (1)
   {
-    //char __idata str[16];
-    char __pdata str1[] = "Hallo world\n";
-    char __pdata str2[] = "FUCK YOU\n";
-    uint8_t n;
-    //strncpy(str, str1, sizeof(str1));
-    n = serial_puts(str1);
-    //strncpy(str, str2, 9);
-    n = serial_puts(str2);
-    CLOCK_BUSYWAIT_BIG_US(700000);
-    led_write_raw(led_raw--);
+    if (serial_getc_available())
+    {
+      uint8_t d = serial_getc_nb();
+      uint16_t sample;
+      serial_putc_blocking(d);
+      s_printf_b("(0x%x)", d);
+      serial_puts_blocking(str2);
+      lcd_clear();
+      l_printf_b("%u:%u:%u:%u\r\n", HOUR, MIN, SEC, HTHSEC);
+      serial_flush();
+      //sample  = adc_sample_channel(ADC_CHANNEL_TEMPERATURE);
+      sample  = adc_sample_channel(ADC_CHANNEL_7);
+      l_printf_b("Sample=%u\r\n", sample);
+      serial_puts_blocking(str1);
+      //lcd_puts_b(d);
+    }
     watchdog_tick();
   }
 }

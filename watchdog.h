@@ -9,7 +9,8 @@ void watchdog_interrupt_handler(void) __interrupt INTERRUPT_WDS __using 1;
 
 static void inline watchdog_tick(void)
 {
-  WDE = 1;
+  WDWR = 1;
+  WDE = 0;
 }
 
 #endif

@@ -4,8 +4,3 @@
 void pwm_enable(void)
 {
 }
-
-void pwm_disable(void)
-{
-  PWMCON = 0x0;
-}

@@ -1,42 +1,56 @@
 #include "serial.h"
 
-#include <stdint.h>
-
 #define DEBUFSIZE 32
 #define DEBUFSIZEMASK (DEBUFSIZE-1)
+
 #if DEBUFSIZE & (DEBUFSIZE-1)
-#error DEBUFSIZE must be an exponential of 2
+#  error DEBUFSIZE must be an exponential of 2
 #endif
 
 //Circular RX/TX buffers. Always keep one slot open.
 
 //debug variable: check whether the interrupt handler is actually called
 
-//For TX: only the get pointer is modified by the interrupt service.
-struct outdebuffer {
+//TX buffer:
+//tx.put = index where to put next symbol to transmit
+//tx.get = index of the current symbol in transmit
+//if (tx.put == current.get)
+//  tx.buffer == empty
+//if (tx.put != current.get)
+//  tx.get == current symbol in transmit
+//if (tx.put+1 == tx.get)
+//  tx.buffer == full
+
+#define BUFSIZE(BUF) (((BUF.put - BUF.get) >= 0) ? (BUF.put - BUF.get) : (BUF.put + DEBUFSIZE - BUF.get))
+
+struct s_outdebuffer {
   uint8_t put;
   volatile uint8_t get;
   uint8_t buffer[DEBUFSIZE];
 };
 
 //For RX: only the put pointer is modified by the interrupt service.
-struct indebuffer {
+struct s_indebuffer {
   volatile uint8_t put;
   uint8_t get;
   uint8_t buffer[DEBUFSIZE];
 };
 
-__xdata struct outdebuffer outbuffer;
-__xdata struct indebuffer inbuffer;
+__idata struct s_outdebuffer outbuffer;
+__idata struct s_indebuffer inbuffer;
 
 void serial_init(void)
 {
-  outbuffer.put = 0;
-  outbuffer.get = 0;
-  inbuffer.put = 0;
-  outbuffer.get = 0;
+  T3FD = 0x6d;
+  T3CON = (T3CON_T3BAUDEN_mask) | (0x5 << T3CON_DIV_shift);
 
-  //SCON = 0x10; //Enable Reception
+  outbuffer.get = 0;
+  outbuffer.put = 0;
+
+  inbuffer.get = 0;
+  inbuffer.put = 0;
+
+  SCON = (SCON_SM1_mask) | (SCON_REN_mask); //Enable Reception
   ES = 1; //Enable Serial Interrupt (IE.ES)
 }
 
@@ -44,33 +58,67 @@ void serial_interrupt_handler(void) __interrupt INTERRUPT_RI_TI __using 1
 {
   if (TI) //SCON.TI
   {
-    uint8_t getpos;
-    getpos = outbuffer.get;
-    if (outbuffer.put != getpos)
+    uint8_t getpos = outbuffer.get;
+    uint8_t nextgetpos = (getpos + 1) & DEBUFSIZEMASK;
+    if (outbuffer.put != nextgetpos)
     {
-      SBUF = outbuffer.buffer[getpos];
-      outbuffer.get = (getpos + 1) & DEBUFSIZEMASK;
+      SBUF = outbuffer.buffer[nextgetpos];
+      outbuffer.get = nextgetpos;
     }
     else
     {
-      TI = 0;//SCON.TI
+      outbuffer.get = outbuffer.put;
+      //There is no more data in the buffer
     }
+    TI = 0; //SCON.TI
   }
-  if (RI)//SCON.RI
+  if (RI) //SCON.RI
   {
-    uint8_t putpos, nextput;
-    RI = 0;
-    putpos = inbuffer.put;
-    nextput = (putpos + 1) & DEBUFSIZEMASK;
-    if (nextput != inbuffer.get)
+    uint8_t putpos = inbuffer.put;
+    uint8_t nextputpos = (putpos + 1) & DEBUFSIZEMASK;
+    if (nextputpos != inbuffer.get)
     {
       inbuffer.buffer[putpos] = SBUF;
-      inbuffer.put = nextput; 
+      inbuffer.put = nextputpos;
     }
+    else
+    {
+        //Dropped a character
+    }
+    RI = 0;
   }
 }
 
-uint8_t serial_get(void)
+void serial_putc_blocking(uint8_t c)
+{
+  uint8_t nextput = (outbuffer.put + 1) & DEBUFSIZEMASK;
+  if (outbuffer.put == outbuffer.get)
+  {
+    outbuffer.buffer[outbuffer.put] = c;
+    SBUF = c;
+    outbuffer.put = nextput;
+    return;
+  }
+  while (nextput == outbuffer.get);
+  outbuffer.buffer[outbuffer.put] = c;
+  outbuffer.put = nextput;
+}
+
+void serial_flush(void)
+{
+  while (outbuffer.put != outbuffer.get);
+}
+
+void serial_puts_blocking(const char *s)
+{
+  while (*s)
+  {
+    serial_putc_blocking(*s);
+    ++s;
+  }
+}
+
+uint8_t serial_getc_nb(void)
 {
   if (inbuffer.put == inbuffer.get)
     return 0;
@@ -82,39 +130,7 @@ uint8_t serial_get(void)
   }
 }
 
-void serial_putc(uint8_t c)
+uint8_t serial_getc_available(void)
 {
-  uint8_t nextput = (outbuffer.put + 1) & DEBUFSIZEMASK;
-  while (nextput == outbuffer.get);
-  //ES = 0; //No need to disable interrupts since only modifying non-conflicting variables
-  outbuffer.buffer[outbuffer.put] = c;
-  outbuffer.put = nextput;
-  TI = 1;
-  //ES = 1;
-}
-
-uint8_t serial_puts(char *s)
-{
-  uint8_t i = 0;
-  uint8_t put = outbuffer.put;
-  while (*s)
-  {
-    uint8_t nextput = (put + 1) & DEBUFSIZEMASK;
-    if (nextput == outbuffer.get)
-    {
-      // No place available
-      break;
-    }
-    else
-    {
-      outbuffer.buffer[put] = *s;
-      ++i;
-      ++s;
-      put = nextput;
-      continue;
-    }
-  }
-  outbuffer.put = put;
-  TI = 1;
-  return i;
+  return (inbuffer.put != inbuffer.get);
 }
