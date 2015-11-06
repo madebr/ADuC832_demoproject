@@ -19,6 +19,7 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
     + Configured at 9600 bauds, no parity
     + Simple printf implementation
     + Console interface
+    + Configurable at compile by setting BAUDRATE
 * LCD:
     + GDM1602
     + 4-bit mode
@@ -32,8 +33,6 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
     + Resets the device if not reset frequently
 
 ##What does not work yet/TODO:
-* UART:
-    + Configurability
 * PWM:
     + TODO
 * LCD:

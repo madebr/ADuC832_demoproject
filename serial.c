@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "serial.h"
 
+#include "clock.h"
+#include "intlog2.h"
+
 #define DEBUFSIZE 32
 #define DEBUFSIZEMASK (DEBUFSIZE-1)
 
@@ -60,10 +63,28 @@ struct s_indebuffer {
 __idata struct s_outdebuffer outbuffer;
 __idata struct s_indebuffer inbuffer;
 
+#define BAUDRATE 9600
+
+#define T3CON_DIV INTLOG2((F_CORE / (32ULL * BAUDRATE)))
+#define T3CON_DIV_MASKVALUE (T3CON_DIV << T3CON_DIV_shift)
+#define T3FD_MASKVALUE ((2 * F_CORE) / ((1ULL << T3CON_DIV) * BAUDRATE))
+
+#if T3CON_DIV == -1
+#error T3CON_DIV: Baudrate too high!
+#elif T3CON_DIV == -2
+#error T3CON_DIV: Baudrate too low!
+#endif
+#if (T3CON_DIV_mask & T3CON_DIV_MASKVALUE) != T3CON_DIV_MASKVALUE
+# error T3CON_DIV value out of range
+#endif
+#if (T3FD_MASKVALUE & 0xff) != T3FD_MASKVALUE
+# error T3FD: value out of range
+#endif
+
 void serial_init(void)
 {
-  T3FD = 0x6d;
-  T3CON = (T3CON_T3BAUDEN_mask) | (0x5 << T3CON_DIV_shift);
+  T3FD = T3FD_MASKVALUE;
+  T3CON = (T3CON_T3BAUDEN_mask) | T3CON_DIV_MASKVALUE;
 
   outbuffer.get = 0;
   outbuffer.put = 0;
