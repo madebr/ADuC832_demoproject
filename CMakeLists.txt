@@ -23,6 +23,7 @@ project(proj1 C ASM)
 #OUTPUT_IHX=output.ihx
 set(HEADERS
   assert.h
+  intlog2.h
   ADUC832.h
 )
 
