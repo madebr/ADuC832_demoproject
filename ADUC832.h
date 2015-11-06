@@ -188,7 +188,7 @@ SFR(SCON, 0x98); // Serial Port Control.
   #define SCON_TB8_mask 0x08
   #define SCON_RB8_mask 0x04
   #define SCON_TI_mask 0x02
-  #define SCON_RI_MASK 0x01
+  #define SCON_RI_mask 0x01
 
 SFR(SBUF, 0x99); // Serial Data Buffer.
 
@@ -205,7 +205,7 @@ SFR(T3CON, 0x9E);       // T3CON is the baud rate control SFR, allowing Timer 3 
 #define T3CON_T3BAUDEN_shift 7
 #define T3CON_T3BAUDEN_mask 0x80
 #define T3CON_DIV_shift 0
-#define T3CON_DIV_MASK 0x07
+#define T3CON_DIV_mask 0x07
 
 SFR(TIMECON, 0xA1); // TIC Control Register. //FIXME: controleer datasheet
   #define TFH  0x40 // Twenty-Four Hour Select Bit.
