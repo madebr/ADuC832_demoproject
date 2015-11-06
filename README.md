@@ -18,6 +18,7 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
     + Blocks when buffer is full
     + Configured at 9600 bauds, no parity
     + Simple printf implementation
+    + Console interface
 * LCD:
     + GDM1602
     + 4-bit mode
@@ -32,7 +33,7 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
 
 ##What does not work yet/TODO:
 * UART:
-    + Better user interface (console)
+    + Configurability
 * PWM:
     + TODO
 * LCD:

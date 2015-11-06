@@ -19,51 +19,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================
 */
+#ifndef _CONSOLE_H_
+#define _CONSOLE_H_
+
 #include <stdint.h>
-
-#include "adc.h"
-#include "clock.h"
-#include "interrupts.h"
-#include "lcd.h"
-#include "pwm.h"
-#include "rtc.h"
-#include "serial.h"
-#include "watchdog.h"
-#include "time.h"
-
-#include "console.h"
 
 #include "ADUC832.h"
 
-// __code put variable in text section (variable will be const)
-// __data/__near: directly addressable portion of internal RAM (will decrease maximum stack) (small memory model)
-// __idata: indirectly addressable portion of internal ram
-// __pdata: eXternal Data
-// __xdata/__far puts variable in eXternal RAM (large memory model)
+void console_init(void);
+uint8_t console_tick(void);
 
-int main()
-{
-  clock_init();
-  adc_init();
-  lcd_init();
-  pwm_init();
-  rtc_init();
-  serial_init();
-  watchdog_init();
-  P2 = 0xff;
-  interrupts_enable();
-  adc_calibrate();
-  console_init();
-  console_valid();
-  while (1)
-  {
-    __idata char *str;
-    console_tick();
-    str = console_valid();
-    if (str)
-    {
-      s_printf_b("Received \"%s\"\r\n", str);
-    }
-    watchdog_tick();
-  }
-}
+__idata char *console_valid(void);
+
+#endif //_CONSOLE_H_

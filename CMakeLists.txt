@@ -32,6 +32,7 @@ set(SOURCES
   clock.c
   lcd.c
   main.c
+  console.c
   printf.c
   rtc.c
   serial.c
