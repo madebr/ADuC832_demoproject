@@ -44,9 +44,10 @@ void printf_fn(putc_t fn, const char *fmt, ...) __reentrant
   va_start(va, fmt);
   while (c = *fmt)
   {
-    int16_t u16;
+    uint16_t u16;
     uint16_t utmp = 0;
     uint16_t utmp2 = 0;
+    char *str;
     ++fmt;
     switch(c)
     {
@@ -59,6 +60,14 @@ void printf_fn(putc_t fn, const char *fmt, ...) __reentrant
         break;
       case '%':
         fn('%');
+        break;
+      case 's':
+        str = va_arg(va, char *);
+        while (*str)
+        {
+          fn(*str);
+          ++str;
+        }
         break;
       case 'c':
         utmp = va_arg(va, uint16_t);
