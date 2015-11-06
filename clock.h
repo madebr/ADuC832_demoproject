@@ -27,11 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 void clock_init(void);
 
-#define CLOCK_CYCLI(USEC)  (((((USEC)*16777216ULL) / 24)/1000000))
+#define F_CORE (512 * 32768ULL)
+
+#define CLOCK_CYCLI(USEC)  (((((USEC)*F_CORE) / 24)/1000000))
 
 //Fixed cost of jump to function and setup + tear down is ignored
 //These the calculated cycli are approximations (upper bounded)
 #define CLOCK_BUSYWAIT_US(US) do {ct_assert(CLOCK_CYCLI(US) < 0x100); ct_assert(CLOCK_CYCLI(US) >= 0);clock_busywait(CLOCK_CYCLI(US));} while(0)
+
 #define CLOCK_BUSYWAIT_BIG_US(US) do {ct_assert(CLOCK_CYCLI(US) < 0x10000); ct_assert(CLOCK_CYCLI(US) >= 0);clock_busywait_big(CLOCK_CYCLI(US));} while(0)
 
 void clock_busywait_big(uint16_t cycli);
