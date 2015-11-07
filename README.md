@@ -31,6 +31,8 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
     + Interrupts at intervals
 * Watchdog:
     + Resets the device if not reset frequently
+* GPIO:
+    + Read buttons/DIP switch
 
 ##What does not work yet/TODO:
 * PWM:
@@ -45,8 +47,6 @@ This project is licensed under GLPv2 as free software. You are free to use, modi
     + Powerdown
     + External Interrupts
     + Change clock
-* GPIO:
-    + Read buttons/DIP switch
 * Timers:
     + TODO
 * System:

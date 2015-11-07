@@ -19,38 +19,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================
 */
-#ifndef _CLOCK_H_
-#define _CLOCK_H_
-
-#include <stdint.h>
-#include "assert.h"
+#include "button.h"
 
 #include "ADUC832.h"
 
-void clock_init(void);
-
-#define F_CORE (512 * 32768ULL)
-
-#define CLOCK_CYCLI(USEC)  (((((USEC)*F_CORE) / 24)/1000000))
-
-//Fixed cost of jump to function and setup + tear down is ignored
-//These the calculated cycli are approximations (upper bounded)
-#define CLOCK_BUSYWAIT_US(US) do {ct_assert(CLOCK_CYCLI(US) < 0x100); ct_assert(CLOCK_CYCLI(US) >= 0);clock_busywait(CLOCK_CYCLI(US));} while(0)
-
-#define CLOCK_BUSYWAIT_BIG_US(US) do {ct_assert(CLOCK_CYCLI(US) < 0x10000); ct_assert(CLOCK_CYCLI(US) >= 0);clock_busywait_big(CLOCK_CYCLI(US));} while(0)
-
-void clock_busywait_big(uint16_t cycli);
-void clock_busywait(uint8_t cycli);
-
-static inline void clock_idle(void)
+uint8_t button_readdip()
 {
-  PCON |= PCON_IDL_mask;
+  uint8_t out = ~P3;
+  if (P0_0)
+    out &= ~0x1;
+  else
+    out |= 0x1;
+  if (P0_1)
+    out &= ~0x2;
+  else
+    out |= 0x2;
+  return out;
 }
-
-static inline uint8_t clock_lock(void)
-{
-  return PLLCON &= PLLCON_LOCK_mask;
-}
-
-#endif
-

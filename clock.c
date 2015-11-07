@@ -25,10 +25,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //Chip intended for use with 32.768kHz watch chrystal
 //PLL locks on multiple (512) = 16.78MHz
 
+#define PLLCON_CD_CLOCK_16_777_216_HZ_MASK_VALUE 0x00
+#define PLLCON_CD_CLOCK_08_388_608_HZ_MASK_VALUE 0x01
+#define PLLCON_CD_CLOCK_04_194_304_HZ_MASK_VALUE 0x02
+#define PLLCON_CD_CLOCK_02_097_152_HZ_MASK_VALUE 0x03
+#define PLLCON_CD_CLOCK_01_048_576_HZ_MASK_VALUE 0x04
+#define PLLCON_CD_CLOCK_00_524_288_HZ_MASK_VALUE 0x05
+#define PLLCON_CD_CLOCK_00_262_144_HZ_MASK_VALUE 0x06
+#define PLLCON_CD_CLOCK_00_131_072_HZ_MASK_VALUE 0x07
+
 void clock_init(void)
 {
   //Run at 16.78MHz
-  PLLCON = 0;
+  //Don't set Fast interrupt response bit
+  PLLCON = PLLCON_CD_CLOCK_16_777_216_HZ_MASK_VALUE;
   CLOCK_BUSYWAIT_US(50);
 }
 

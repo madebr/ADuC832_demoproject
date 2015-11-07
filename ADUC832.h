@@ -89,6 +89,15 @@ SFR(PCON, 0x87); // Power Control.
   #define PD     0x02 //Power-Down Mode Enable.
   #define IDL    0x01 //Idle Mode Enable.
 
+#define PCON_SMOD_mask 0x80
+#define PCON_SERIPD_mask 0x40
+#define PCON_INT0PD_mask 0x40
+#define PCON_ALEOFF_mask 0x10
+#define PCON_GF1_mask 0x04
+#define PCON_GF0_mask 0x04
+#define PCON_PD_mask 0x02
+#define PCON_IDL_mask 0x01
+
 SFR(TCON, 0x88); // Timer/Counter Control.
   SBIT(TF1, 0x88, 7); // Timer 1 overflow flag.
   SBIT(TR1, 0x88, 6); // Timer 1 run control flag.

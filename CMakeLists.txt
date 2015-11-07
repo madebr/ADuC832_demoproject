@@ -29,6 +29,7 @@ set(HEADERS
 
 set(SOURCES
   adc.c
+  button.c
   pwm.c
   clock.c
   lcd.c

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdint.h>
 
 #include "adc.h"
+#include "button.h"
 #include "clock.h"
 #include "interrupts.h"
 #include "lcd.h"
@@ -63,7 +64,10 @@ int main()
     if (str)
     {
       s_printf_b("Received \"%s\"\r\n", str);
+      s_printf_b("0x%x\r\n", button_readdip());
+      s_printf_b("0x%x\r\n", clock_lock());
     }
+    clock_idle();
     watchdog_tick();
   }
 }

@@ -19,38 +19,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================
 */
-#ifndef _CLOCK_H_
-#define _CLOCK_H_
+#ifndef _BUTTON_H_
+#define _BUTTON_H_
 
 #include <stdint.h>
-#include "assert.h"
 
-#include "ADUC832.h"
+//The buttons are active low
+//(voltage drops when button is pressed)
+#define NOT_BUTTON1 P3_7
+#define NOT_BUTTON2 P3_6
+#define NOT_BUTTON3 P3_5
+#define NOT_BUTTON4 P3_4
 
-void clock_init(void);
+#define _BUTTON_WAIT(BTN) \
+  do { \
+    while(BTN); \
+    while(!(BTN)); \
+  } while (0)
 
-#define F_CORE (512 * 32768ULL)
+#define button_wait1() _BUTTON_WAIT(NOT_BUTTON1)
+#define button_wait2() _BUTTON_WAIT(NOT_BUTTON2)
+#define button_wait3() _BUTTON_WAIT(NOT_BUTTON3)
+#define button_wait4() _BUTTON_WAIT(NOT_BUTTON4)
 
-#define CLOCK_CYCLI(USEC)  (((((USEC)*F_CORE) / 24)/1000000))
+uint8_t button_readdip();
 
-//Fixed cost of jump to function and setup + tear down is ignored
-//These the calculated cycli are approximations (upper bounded)
-#define CLOCK_BUSYWAIT_US(US) do {ct_assert(CLOCK_CYCLI(US) < 0x100); ct_assert(CLOCK_CYCLI(US) >= 0);clock_busywait(CLOCK_CYCLI(US));} while(0)
-
-#define CLOCK_BUSYWAIT_BIG_US(US) do {ct_assert(CLOCK_CYCLI(US) < 0x10000); ct_assert(CLOCK_CYCLI(US) >= 0);clock_busywait_big(CLOCK_CYCLI(US));} while(0)
-
-void clock_busywait_big(uint16_t cycli);
-void clock_busywait(uint8_t cycli);
-
-static inline void clock_idle(void)
-{
-  PCON |= PCON_IDL_mask;
-}
-
-static inline uint8_t clock_lock(void)
-{
-  return PLLCON &= PLLCON_LOCK_mask;
-}
-
-#endif
-
+#endif //_BUTTON_H_
