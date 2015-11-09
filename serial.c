@@ -67,7 +67,7 @@ __idata struct s_indebuffer inbuffer;
 
 #define T3CON_DIV INTLOG2((F_CORE / (32ULL * BAUDRATE)))
 #define T3CON_DIV_MASKVALUE (T3CON_DIV << T3CON_DIV_shift)
-#define T3FD_MASKVALUE ((2 * F_CORE) / ((1ULL << T3CON_DIV) * BAUDRATE))
+#define T3FD_MASKVALUE_CRUDE ((2 * F_CORE) / ((1ULL << T3CON_DIV) * BAUDRATE))
 
 #if T3CON_DIV == -1
 #error T3CON_DIV: Baudrate too high!
@@ -77,9 +77,12 @@ __idata struct s_indebuffer inbuffer;
 #if (T3CON_DIV_mask & T3CON_DIV_MASKVALUE) != T3CON_DIV_MASKVALUE
 # error T3CON_DIV value out of range
 #endif
-#if (T3FD_MASKVALUE & 0xff) != T3FD_MASKVALUE
+#if T3FD_MASKVALUE_CRUDE >= 0xff
+ // >= because rounding may increment the value
 # error T3FD: value out of range
 #endif
+
+#define T3FD_MASKVALUE ((uint8_t) T3FD_MASKVALUE_CRUDE + 0.5)
 
 void serial_init(void)
 {
@@ -133,22 +136,31 @@ void serial_interrupt_handler(void) __interrupt INTERRUPT_RI_TI __using 1
 
 void serial_putc_blocking(uint8_t c)
 {
-  uint8_t nextput = (outbuffer.put + 1) & DEBUFSIZEMASK;
-  if (outbuffer.put == outbuffer.get)
-  {
-    outbuffer.buffer[outbuffer.put] = c;
-    SBUF = c;
-    outbuffer.put = nextput;
-    return;
-  }
+  uint8_t put = outbuffer.put;
+  uint8_t nextput = (put + 1) & DEBUFSIZEMASK;
+
+  //Block as long as the buffer is full
   while (nextput == outbuffer.get);
-  outbuffer.buffer[outbuffer.put] = c;
+
+  outbuffer.buffer[put] = c;
   outbuffer.put = nextput;
+
+  // No need to disable the serial ISR:
+  // - if the queue is empty, the tx ISR will not be called
+  //     so start transmissing by writing to SBUF
+  // - if the queue is not empty,
+  //    the tx might already be processing the new character
+
+  if (put == outbuffer.get) //Is buffer empty?
+  {
+    SBUF = c;
+  }
 }
 
 void serial_flush(void)
 {
-  while (outbuffer.put != outbuffer.get);
+  uint8_t put = outbuffer.put;
+  while (put != outbuffer.get);
 }
 
 void serial_puts_blocking(const char *s)
