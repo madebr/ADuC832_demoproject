@@ -68,6 +68,5 @@ int main()
       s_printf_b("0x%x\r\n", clock_lock());
     }
     clock_idle();
-    watchdog_tick();
   }
 }

@@ -21,8 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "watchdog.h"
 
+#define WDCON_PRE_TIMEOUT_0015_6_MS_MASKVALUE 0x00
+#define WDCON_PRE_TIMEOUT_0031_2_MS_MASKVALUE 0x10
+#define WDCON_PRE_TIMEOUT_0062_5_MS_MASKVALUE 0x20
+#define WDCON_PRE_TIMEOUT_0125_0_MS_MASKVALUE 0x30
+#define WDCON_PRE_TIMEOUT_0250_0_MS_MASKVALUE 0x40
+#define WDCON_PRE_TIMEOUT_0500_0_MS_MASKVALUE 0x50
+#define WDCON_PRE_TIMEOUT_1000_0_MS_MASKVALUE 0x60
+#define WDCON_PRE_TIMEOUT_2000_0_MS_MASKVALUE 0x70
+#define WDCON_PRE_TIMEOUT_0000_0_MS_MASKVALUE 0x80
+
 void watchdog_interrupt_handler(void) __interrupt INTERRUPT_WDS __using 1
 {
+  P2_6 ^= 0x1;
 }
 
 void watchdog_init(void)
@@ -33,9 +44,9 @@ void watchdog_init(void)
 
   //Start the watchdog.
   //The watchdog will reset after 500ms of no reset.
-  WDCON = (0x5 << WDCON_PRE_shift) | WDCON_WDE_mask;
+  WDCON = WDCON_PRE_TIMEOUT_0500_0_MS_MASKVALUE;
 
   //The watchdog will interrupt after 500ms of no reset.
-  //WDCON = (0x0 << WDCON_PRE_shift) | WDCON_WDIR_mask | WDCON_WDE_mask;
+  //WDCON = WDCON_PRE_TIMEOUT_0500_0_MS_MASKVALUE | WDCON_WDIR_mask | WDCON_WDE_mask;
 }
 
