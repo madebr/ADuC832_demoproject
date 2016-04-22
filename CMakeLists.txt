@@ -24,6 +24,7 @@ project(proj1 C ASM)
 set(HEADERS
   assert.h
   intlog2.h
+  util.h
   ADUC832.h
 )
 
@@ -38,6 +39,7 @@ set(SOURCES
   printf.c
   rtc.c
   serial.c
+  timer.c
   watchdog.c
 )
 
