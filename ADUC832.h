@@ -109,19 +109,35 @@ SFR(TCON, 0x88); // Timer/Counter Control.
   SBIT(IT0, 0x88, 0); // Interrupt 0 type control bit.
 
 SFR(TMOD, 0x89); // Timer/Counter Mode Control.
-  #define TMOD_GATE1 0x80 // External enable for timer 1.
-  #define TMOD_C_T1  0x40 // Timer or counter select for timer 1.
-  #define TMOD_M1_1  0x20 // Operation mode bit 1 for timer 1.
-  #define TMOD_M0_1  0x10 // Operation mode bit 0 for timer 1.
-  #define TMOD_GATE0 0x08 // External enable for timer 0.
-  #define TMOD_C_T0  0x04 // Timer or counter select for timer 0.
-  #define TMOD_M1_0  0x02 // Operation mode bit 1 for timer 0.
-  #define TMOD_M0_0  0x01 // Operation mode bit 0 for timer 0.
+
+#define TMOD_GATE_T1_mask 0x80 // Timer 1: External enable.
+#define TMOD_CT_T1_mask   0x40 // Timer 1: Timer or counter select
+#define TMOC_M_T1_mask    0x30 // Timer 1: Mode
+#define TMOC_M_T1_shift   4
+#define TMOD_GATE_T0_mask 0x08 // Timer 0: External enable.
+#define TMOD_CT_T0_mask   0x04 // Timer 0: Timer or counter select
+#define TMOD_M_T0_mask    0x03 // Timer 0: Mode
+#define TMOD_M_T0_shift   0
 
 SFR(TL0, 0x8A); // Timer 0 LSB.
-SFR(TL1, 0x8B); // Timer 1 LSB.
 SFR(TH0, 0x8C); // Timer 0 MSB.
+SFR(TL1, 0x8B); // Timer 1 LSB.
 SFR(TH1, 0x8D); // Timer 1 MSB.
+
+SFR(T2CON, 0xC8); // Timer / Counter 2 Control.
+  SBIT(TF2,   0xC8, 7); // Timer 2 overflow flag.
+  SBIT(EXF2,  0xC8, 6); // Timer 2 external flag.
+  SBIT(RCLK,  0xC8, 5); // Receive clock flag.
+  SBIT(TCLK,  0xC8, 4); // Transmit clock flag.
+  SBIT(EXEN2, 0xC8, 3); // Timer 2 external enable flag.
+  SBIT(TR2,   0xC8, 2); // Start/stop control for timer 2.
+  SBIT(CNT2,  0xC8, 1); // Timer or coutner select.
+  SBIT(CAP2,  0xC8, 0); // Capture/reload flag.
+
+SFR(RCAP2L, 0xCA); // Timer 2 Capture LSB.
+SFR(RCAP2H, 0xCB); // Timer 2 Capture MSB.
+SFR(TL2,    0xCC); // Timer 2 LSB.
+SFR(TH2,    0xCD); // Timer 2 MSB.
 
 SFR(P0, 0x80); // Port 0
   SBIT(P0_0, 0x80, 0); // Port 0 bit 0.
@@ -201,7 +217,6 @@ SFR(SCON, 0x98); // Serial Port Control.
 
 SFR(SBUF, 0x99); // Serial Data Buffer.
 
-//For these two, you may want to the datasheet... //FIXME: controleer datasheet
 SFR(T3FD,  0x9D);       // Fractional divider ratio.
 SFR(T3CON, 0x9E);       // T3CON is the baud rate control SFR, allowing Timer 3 to be
                         // used to set up the UART baud rate, and setting up the binary
@@ -225,11 +240,11 @@ SFR(TIMECON, 0xA1); // TIC Control Register. //FIXME: controleer datasheet
   #define TIEN 0x02 // Time Interval Enable Bit.
   #define TCEN 0x01 // Time Clock Enable Bit.
 
-#define TIMECON_TFH_mask 0x40
-#define TIMECON_ITS_mask 0x30
+#define TIMECON_TFH_mask  0x40
+#define TIMECON_ITS_mask  0x30
 #define TIMECON_ITS_shift 4
-#define TIMECON_STI_mask 0x08
-#define TIMECON_TII_mask 0x04
+#define TIMECON_STI_mask  0x08
+#define TIMECON_TII_mask  0x04
 #define TIMECON_TIEN_mask 0x02
 #define TIMECON_TCEN_mask 0x01
 
@@ -319,21 +334,6 @@ SFR(WDCON, 0xC0); //Watchdog Timer Control Register.
   #define WDCON_WDWR_mask  0x01
 
 SFR(CHIPID, 0xC2); // System Self-Identification? WARNING: No description in the datasheet.
-
-SFR(T2CON, 0xC8); // Timer / Counter 2 Control.
-  SBIT(TF2,   0xC8, 7); // Timer 2 overflow flag.
-  SBIT(EXF2,  0xC8, 6); // Timer 2 external flag.
-  SBIT(RCLK,  0xC8, 5); // Receive clock flag.
-  SBIT(TCLK,  0xC8, 4); // Transmit clock flag.
-  SBIT(EXEN2, 0xC8, 3); // Timer 2 external enable flag.
-  SBIT(TR2,   0xC8, 2); // Start/stop control for timer 2.
-  SBIT(CNT2,  0xC8, 1); // Timer or coutner select.
-  SBIT(CAP2,  0xC8, 0); // Capture/reload flag.
-
-SFR(RCAP2L, 0xCA); // Timer 2 Capture LSB.
-SFR(RCAP2H, 0xCB); // Timer 2 Capture MSB.
-SFR(TL2,    0xCC); // Timer 2 LSB.
-SFR(TH2,    0xCD); // Timer 2 MSB.
 
 SFR(PSW, 0xD0); // Program Status Word.
    SBIT(CY,  0xD0, 7); // Carry Flag.
