@@ -123,7 +123,6 @@ __idata struct s_lcdinfo lcdinfo;
 
 void lcd_init(void)
 {
-
   CLOCK_BUSYWAIT_BIG_US(30000 + 10); //Wait 30ms after Vdd rises
   lcd_send_nibble(LCD_ALWAYS_mask | (LCD_FUNCTION_SET & 0xf0));
   LCD_COMMAND(LCD_FUNCTION_SET);
@@ -142,22 +141,22 @@ void lcd_puts_b(uint8_t c)
 {
   if (c == '\r')
     return;
-  if (c == '\n')
-    lcdinfo.pos = (lcdinfo.pos + 0x10) & 0xf0;
+  else if (c == '\n')
+    lcdinfo.pos = (lcdinfo.pos ^ 0x10) & 0x10;
   else
   {
     LCD_DATA(c);
     CLOCK_BUSYWAIT_US(43);
     lcdinfo.pos++;
+    lcdinfo.pos &= 0x1f;
   }
   if (lcdinfo.pos == 0x10)
   {
     LCD_COMMAND(LCD_CHANGE_CURSOR(1, 0));
   }
-  else if (lcdinfo.pos == 0x20)
+  else if (lcdinfo.pos == 0x00)
   {
     LCD_COMMAND(LCD_CHANGE_CURSOR(0, 0));
-    lcdinfo.pos = 0x0;
   }
 
 }
