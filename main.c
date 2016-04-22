@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "serial.h"
 #include "watchdog.h"
 #include "time.h"
+#include "timer.h"
+#include "util.h"
 
 #include "console.h"
 
@@ -50,12 +52,12 @@ int main()
   pwm_init();
   rtc_init();
   serial_init();
+  timer_init();
   watchdog_init();
   P2 = 0xff;
   interrupts_enable();
   adc_calibrate();
   console_init();
-  console_valid();
   while (1)
   {
     __idata char *str;
@@ -65,8 +67,10 @@ int main()
     {
       s_printf_b("Received \"%s\"\r\n", str);
       s_printf_b("0x%x\r\n", button_readdip());
-      s_printf_b("0x%x\r\n", clock_lock());
+      s_printf_b("T%d: 0x%x\r\n", 0, convert8_16(TL0, TH0));
+      s_printf_b("T%d: 0x%x\r\n", 1, convert8_16(TL1, TH1));
     }
     clock_idle();
+    P2_7 ^= 0x1;
   }
 }
