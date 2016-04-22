@@ -79,6 +79,12 @@ uint8_t console_tick(void)
   {
     uint8_t c = con_getc_nb();
 
+    if (constat.control == DATAVALID)
+    {
+      con_puts_b(CON_PREFIX);
+      constat.control = DATA;
+    }
+
     // Check for control characters
     switch (c)
     {
@@ -175,8 +181,8 @@ uint8_t console_tick(void)
       con_putc_b('\n');
       constat.control = DATAVALID;
       break;
-      break;
     default:
+      break;
     }
 
     //Only put data in buffer if no control byte has been seen (control == DATA)
@@ -218,15 +224,12 @@ uint8_t console_tick(void)
     }
     return 1;
   }
-  else
+  else if (constat.control == DATAVALID)
   {
-    if (constat.control == DATAVALID)
-    {
-      con_puts_b(CON_PREFIX);
-      constat.control = DATA;
-    }
-    return 0;
+    con_puts_b(CON_PREFIX);
+    constat.control = DATA;
   }
+  return 0;
 }
 
 __idata char *console_valid(void)
