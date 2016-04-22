@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define button_wait3() _BUTTON_WAIT(NOT_BUTTON3)
 #define button_wait4() _BUTTON_WAIT(NOT_BUTTON4)
 
-uint8_t button_readdip();
+void button_init(void);
+uint8_t button_readdip(void);
 
 #endif //_BUTTON_H_

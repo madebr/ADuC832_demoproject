@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ADUC832.h"
 
-uint8_t button_readdip()
+uint8_t button_readdip(void)
 {
   uint8_t out = ~P3;
   if (P0_0)
@@ -35,4 +35,10 @@ uint8_t button_readdip()
   else
     out |= 0x2;
   return out;
+}
+
+void button_init(void)
+{
+  //Configure P3 as input
+  P3 = 0xff;
 }
