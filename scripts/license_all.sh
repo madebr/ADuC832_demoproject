@@ -1,6 +1,6 @@
 #!/bin/bash
 #=============================================================================
-#Copyright (C) 2015, Anonymous Maarten
+#Copyright (C) 2015-2016, Anonymous Maarten
 #
 #This file is part of ADuC832 demoproject.
 #
@@ -21,4 +21,4 @@
 
 srcdir=$(readlink -f "$(dirname "$(readlink -f $0)")/..")
 
-find "$srcdir" \( ! -regex '.*/\..*' -a ! -name '.*/licenseheader' -a ! -name 'LICENSE' -a ! -iname "*.bak" \) -type f -exec "$srcdir/tools/prepender.py" -l "$srcdir/tools/licenseheader" {} \;
+find "$srcdir" \( ! -regex '.*/\..*' -a ! -name '.*/licenseheader' -a ! -name 'LICENSE' -a ! -iname "*.bak" \) -type f -exec "$srcdir/scripts/prepender.py" -l "$srcdir/scripts/licenseheader" {} \;

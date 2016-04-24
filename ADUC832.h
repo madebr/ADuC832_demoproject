@@ -1,6 +1,6 @@
 /*
 =============================================================================
-Copyright (C) 2015, Anonymous Maarten
+Copyright (C) 2015-2016-2016, Anonymous Maarten
 Copyright (C) 2007, Jesus Calvino-Fraga / jesusc at ece.ubc.ca
 
 This file is part of ADuC832 demoproject.

@@ -1,6 +1,6 @@
 /*
 =============================================================================
-Copyright (C) 2015, Anonymous Maarten
+Copyright (C) 2015-2016, Anonymous Maarten
 
 This file is part of ADuC832 demoproject.
 
